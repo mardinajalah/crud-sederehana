@@ -21,6 +21,12 @@ export const PATCH = async (request: Request, {params} : {params: {id: string}})
 }
 
 export const DELETE = async (request: Request, {params} : {params: {id: string}}) => {
+  const id = params?.id
+
+  if (!id) {
+    return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+  }
+
   const product = await prisma.product.delete({
     where: {
       id: Number(params.id)
