@@ -4,11 +4,11 @@ import type { Product } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const PATCH = async (request: Request, {params} : {params: {id: string}}) => {
+export const PATCH = async (request: Request, {params} : {params: Promise<{id: string}>}) => {
   const body: Product = await request.json();
   const product = await prisma.product.update({
     where: {
-      id: Number(params.id)
+      id: Number((await params).id)
     },
     data: {
       title: body.title,
@@ -20,16 +20,10 @@ export const PATCH = async (request: Request, {params} : {params: {id: string}})
   return NextResponse.json(product, { status: 200 });
 }
 
-export const DELETE = async (request: Request, {params} : {params: {id: string}}) => {
-  const id = params?.id
-
-  if (!id) {
-    return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-  }
-
+export const DELETE = async (request: Request, {params} : {params: Promise<{id: string}>}) => {
   const product = await prisma.product.delete({
     where: {
-      id: Number(params.id)
+      id: Number((await params).id)
     }
   });
 
